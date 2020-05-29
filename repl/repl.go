@@ -1,0 +1,32 @@
+package repl
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+
+	"github.com/jimmyfielding/go-interpeter/lexer"
+	"github.com/jimmyfielding/go-interpeter/token"
+)
+
+const PROMPT = ">> "
+
+func Start(in io.Reader, out io.Writer) {
+	scanner := bufio.NewScanner(in)
+	var line string
+	var l *lexer.Lexer
+	for {
+		fmt.Printf(PROMPT)
+		scanned := scanner.Scan()
+		if !scanned {
+			return
+		}
+
+		line = scanner.Text()
+		l = lexer.New(line)
+
+		for t := l.NextToken(); t.Type != token.EOF; t = l.NextToken() {
+			fmt.Printf("%+v\n", t)
+		}
+	}
+}
